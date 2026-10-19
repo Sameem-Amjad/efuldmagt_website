@@ -45,19 +45,32 @@ const renderStatement = (fuldmagt) => {
         "$revokedDate": fuldmagt.expiry ? formatDate(fuldmagt.expiry) : "N/A",
     };
 
-    // 6. Map the unique placeholders to the data array
-    uniquePlaceholders.forEach((placeholder, index) => {
-        let value = additionalFieldsData[index];
+    // 6. Map the template fields to the data array.
+    //    With the template's field keys (sent by the API) each value goes to its own
+    //    $Key, wherever the statement uses it, and date fields are known by their type.
+    //    Older responses without keys fall back to matching by statement order.
+    const { additionalFields, additionalFieldsType = [] } = fuldmagt;
+    const formatValue = (value, isDate) => {
         if (Array.isArray(value)) value = value.join(', ');
-        if (placeholder.toLowerCase().includes('date')) value = formatDate(value);
-        replacements[placeholder] = value !== undefined ? value : "";
-    });
+        if (isDate && value) value = formatDate(value);
+        return value !== undefined && value !== null ? value : "";
+    };
+    if (Array.isArray(additionalFields) && additionalFields.length > 0) {
+        additionalFields.forEach((key, index) => {
+            replacements[`$${key}`] = formatValue(additionalFieldsData[index], additionalFieldsType[index] === "date");
+        });
+    } else {
+        uniquePlaceholders.forEach((placeholder, index) => {
+            replacements[placeholder] = formatValue(additionalFieldsData[index], placeholder.toLowerCase().includes('date'));
+        });
+    }
 
-    // 7. Loop through the final map and replace ALL instances ("g" flag)
+    // 7. Loop through the final map and replace ALL instances ("g" flag);
+    //    the lookahead keeps $TextField from eating the start of $TextField2
     let processedStatement = fuldmagtStatement;
     for (const [variable, value] of Object.entries(replacements)) {
         if (variable === "$fuldmagtGiverSignature") continue;
-        const regex = new RegExp(`\\${variable}`, "g");
+        const regex = new RegExp(`\\${variable}(?!\\w)`, "g");
         processedStatement = processedStatement.replace(regex, String(value));
     }
 
@@ -96,7 +109,8 @@ export default function PackageCollectionToken({ fuldmagt, imageUrl }) {
     const { fuldmagtGiverSignature, createdAt, expiry, fuldmagtDocumentsLink } = fuldmagt;
     const expiriesIn = timeDiff(expiry, createdAt);
     const finalStatement = renderStatement(fuldmagt);
-    const isMitIdVerified = fuldmagtDocumentsLink && fuldmagtDocumentsLink.length > 0;
+    // Only a real MitID-signed document counts (every fuldmagt has an issue entry, often without a link)
+    const isMitIdVerified = Boolean(fuldmagtDocumentsLink?.[0]?.fuldmagtDocumentLink);
 
     return (
         <div className="test-token flex flex-col md:flex-row p-1 w-full max-w-[300px] md:max-w-full md:w-[734px] md:h-auto">
@@ -159,6 +173,6 @@ export default function PackageCollectionToken({ fuldmagt, imageUrl }) {
                 )}
 
             </div>
-            Note   </div>
+        </div>
     );
 }

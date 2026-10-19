@@ -11,6 +11,7 @@ import UserSVG from "../../assets/icons/user.svg?react";
 import SignSVG from "../../assets/icons/sign.svg?react";
 import LanguageSVG from "../../assets/icons/Language.svg?react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { setCurrentlyActiveProfile } from "../../redux/features/user/userSlice";
 import MitIdVerificationSetting from "./mitIdProfileSettings/MitIdVerificationSetting";
 
@@ -21,8 +22,15 @@ const ProfileSettings = () => {
   const { user, currentlyActiveProfile } = useSelector((state) => state.user);
   const { company } = useSelector((state) => state.company);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleToggle = (val) => {
+    // No company yet ("Not Available"): switching to it left every list
+    // request failing, so offer to add one instead.
+    if (val === "company" && !company?.companyName) {
+      navigate("add-company");
+      return;
+    }
     dispatch(setCurrentlyActiveProfile(val));
   };
 

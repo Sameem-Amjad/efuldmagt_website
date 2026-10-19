@@ -228,19 +228,21 @@ const CreateEfuldmagt = () => {
                     fuldmagtGiverSignature: savedSignature,
                     agentId: isChooseMannually ? "" : selectedUser._id,
                     ...(isChooseMannually && { ...data.fuldmagtUser }),
-                    fuldmagtDocumentLink: "https://example.com/document.pdf",
-                    fuldmagtDocumentKey: "https://example.com/document.pdf",
+                    // No MitID document while MitID signing is switched off (it used to
+                    // send example.com placeholders, shown as a "MitID Verified" document).
                 };
             } else {
                 body = {
                     ...body,
-                    fuldmagtGiverId: selectedUser._id,
+                    // Typed manually: the person asked to give the fuldmagt is the one
+                    // entered in the form (selectedUser is null then).
+                    fuldmagtGiverId: isChooseMannually ? "" : selectedUser._id,
                     ...(isChooseMannually && {
-                        fuldmagtGiverName: user.fullName,
-                        fuldmagtGiverDOB: user.dateOfBirth,
-                        fuldmagtGiverEmail: user.email,
-                        fuldmagtGiverPhoneNumber: user.phoneNumber,
-                        fuldmagtGiverCountryCode: user.countryCode,
+                        fuldmagtGiverName: data.fuldmagtUser.agentName,
+                        fuldmagtGiverDOB: data.fuldmagtUser.agentDOB,
+                        fuldmagtGiverEmail: data.fuldmagtUser.agentEmail,
+                        fuldmagtGiverPhoneNumber: data.fuldmagtUser.agentPhoneNumber,
+                        fuldmagtGiverCountryCode: data.fuldmagtUser.agentCountryCode,
                     }),
 
                 };

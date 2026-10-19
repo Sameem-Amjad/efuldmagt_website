@@ -4,7 +4,7 @@ import OTPInput from "@/components/global/OtpInput/otpInput";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
-  sendOTP,
+  forgetPasscodeSendOTP,
   verifyForgotPasswordOTP,
 } from "../../../../services/authentication.services";
 import { LoadingSpinner } from "../../../../components/global/Loaders/Loader";
@@ -77,7 +77,7 @@ const OtpVerifications = () => {
       }
 
       if (email) setOtp(new Array(4).fill(""));
-      const res = await sendOTP(validData);
+      const res = await forgetPasscodeSendOTP(validData);
 
       if (res.status === 200) {
         toast.success(t("new_otp_sent_toast"));

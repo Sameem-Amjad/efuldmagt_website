@@ -86,7 +86,7 @@ export default function DashboardDrawer() {
           <div
             className="flex items-center mt-4 cursor-pointer"
             onClick={() => {
-              navigate("/settings");
+              navigate("/profile-settings");
               setDrawer(false);
             }}
           >

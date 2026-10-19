@@ -2,14 +2,16 @@
 importScripts("https://www.gstatic.com/firebasejs/8.2.0/firebase-app.js");
 importScripts("https://www.gstatic.com/firebasejs/8.2.0/firebase-messaging.js");
 
+// Must be the same Firebase project as VITE_APP_* in .env and the backend's
+// service account, or push tokens are issued by a project the backend can't send to.
 const firebaseConfig = {
-  apiKey: "AIzaSyDlOcc-5sJSUc7O2BjuwqfQ_P5mBKuFvD0",
-  authDomain: "efuldmagt-41e99.firebaseapp.com",
-  projectId: "efuldmagt-41e99",
-  storageBucket: "efuldmagt-41e99.firebasestorage.app",
-  messagingSenderId: "369787640219",
-  appId: "1:369787640219:web:e18f9cabaf9ac7d730a93e",
-  measurementId: "G-0T30C3SBPS",
+  apiKey: "AIzaSyD4B7Vc5CF0GonXxfI-_ND5WHRLXvRlNR4",
+  authDomain: "efuldmagt-1a602.firebaseapp.com",
+  projectId: "efuldmagt-1a602",
+  storageBucket: "efuldmagt-1a602.firebasestorage.app",
+  messagingSenderId: "38682304373",
+  appId: "1:38682304373:web:19f158e7b829e8071efd3c",
+  measurementId: "G-J1H5GBHRWF",
 };
 
 firebase.initializeApp(firebaseConfig);

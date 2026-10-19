@@ -46,7 +46,8 @@ const Efludmagt = () => {
       agentDOB: formatToDateOnly(item.agentDOB),
     };
 
-    if (fuldmagtData.expiry < new Date() && !fuldmagtData.revoked) {
+    // An acknowledged fuldmagt can't be issued again (the API refuses), so don't offer it
+    if (fuldmagtData.expiry < new Date() && !fuldmagtData.revoked && !fuldmagtData.acknowledged) {
       setExpired(true);
     } else {
       setExpired(false);
@@ -123,9 +124,10 @@ const Efludmagt = () => {
     await acknowlegeFuldmagtRequest(token, fuldmagt._id, signature)
       .then((res) => {
         toast.success(t("fuldmagt_signed_successfully_toast"));
+        // Merge into the loaded item: the response is the raw document, without the
+        // template fields (title, icon, validity) the page was rendered from.
         const updatedFuldmagt = res.data.data.fuldmagt;
-        updatedFuldmagt.expiry = new Date(updatedFuldmagt.expiry);
-        setFuldmagt(updatedFuldmagt);
+        setItem((prev) => ({ ...prev, ...updatedFuldmagt }));
       })
       .catch((err) => {
         console.log(err);
@@ -160,13 +162,14 @@ const Efludmagt = () => {
       {fuldmagt.acknowledged && <p>{t("fuldmagt_acknowledged")}</p>}
       <PackageCollectionToken
         fuldmagt={fuldmagt}
-        imageUrl={user.image}
+        imageUrl={fuldmagt.fuldmagtGiverImage || user.image}
       />
 
       {(fuldmagt.fuldmagtGiverId == user._id ||
         (company && fuldmagt.fuldmagtGiverId == company._id)) && (
           <>
-            {!fuldmagt.revoked && !fuldmagt.acknowledged && fuldmagt.requestStatus != "approved" && (
+            {/* not once expired: the API refuses to revoke an expired fuldmagt (Issue Again is offered instead) */}
+            {!fuldmagt.revoked && !fuldmagt.acknowledged && fuldmagt.requestStatus != "approved" && fuldmagt.expiry > new Date() && (
               <button
                 className="btn-primary w-[150px] h-[60px]"
                 onClick={() => {
@@ -203,7 +206,7 @@ const Efludmagt = () => {
               fuldmagt={fuldmagt}
             />
 
-            {(new Date() > fuldmagt.expiry || fuldmagt.revoked) && (
+            {(new Date() > fuldmagt.expiry || fuldmagt.revoked) && !fuldmagt.acknowledged && (
               <button
                 disabled={issuing}
                 className="btn-primary w-[150px] h-[60px] disabled:bg-opacity-50 disabled:cursor-not-allowed"

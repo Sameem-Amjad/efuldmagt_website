@@ -92,7 +92,7 @@ const DashboardLayout = ({ children }) => {
           <ProfileDropdown />
         </div>
         <div className="mt-5 h-[35px]  justify-between items-center flex md:hidden">
-          <Link to="/home">
+          <Link to="/">
             <img className="w-[30px]" src={"/images/logo.jpeg"}></img>
           </Link>
 

@@ -4,9 +4,9 @@ import PackageSVG from "@/assets/icons/package.svg?react";
 import { CircularProgressbar } from "react-circular-progressbar";
 import { useTranslation } from "react-i18next";
 
-// This helper function remains the same
-function timeLeftFormat(timeLeft) {
-  const {t}=useTranslation()
+// Plain helper (not a hook): it gets `t` from the component, because it is only
+// called while time is left and a conditional hook call breaks React's hook order.
+function timeLeftFormat(timeLeft, t) {
   if (timeLeft < 0) return "0d 0h 0mins 0secs"; // Handle expired case
   timeLeft = Math.floor(timeLeft / 1000);
   const days = Math.floor(timeLeft / (3600 * 24));
@@ -24,26 +24,28 @@ const ExpiryBox = ({ expiryDate, issuedDate, revoked, rejected }) => {
   // 2. Correctly calculate the total duration (end - start)
   const totalDuration = expiry - issued;
 
-  // 3. Initialize timeLeft state with a function to ensure it runs only once
-  const [timeLeft, setTimeLeft] = useState(() => expiry - new Date());
+  // 3. Time left is derived from a ticking "now", so it follows the expiry prop.
+  //    (The parent first renders this box before its data has loaded, with no
+  //    expiry; state seeded from that stayed NaN and showed "Expired".)
+  const [now, setNow] = useState(() => Date.now());
+  const timeLeft = expiry - now;
+  const expiryMs = expiry.getTime();
 
-  // 4. Use a single, robust useEffect for the timer
+  // 4. Tick every second while the fuldmagt is still running
   useEffect(() => {
+    setNow(Date.now());
     // If the fuldmagt is revoked, rejected, or already expired, don't start the timer.
-    if (revoked || rejected === "rejected" || timeLeft <= 0) {
+    if (revoked || rejected === "rejected" || !(expiryMs > Date.now())) {
       return;
     }
 
-    // Use setInterval to update the time every second
-    const intervalId = setInterval(() => {
-      setTimeLeft((prevTimeLeft) => prevTimeLeft - 1000);
-    }, 1000);
+    const intervalId = setInterval(() => setNow(Date.now()), 1000);
 
     // This is the cleanup function: it runs when the component unmounts
     // or when the dependencies change. It stops the timer.
     return () => clearInterval(intervalId);
 
-  }, [expiry, revoked, rejected]); // Rerun effect only if these props change
+  }, [expiryMs, revoked, rejected]); // Rerun effect only if these props change
 
   // Calculate the percentage based on the current timeLeft
   const percentage = Math.max(0, (timeLeft / totalDuration) * 100);
@@ -62,7 +64,7 @@ const ExpiryBox = ({ expiryDate, issuedDate, revoked, rejected }) => {
           ) : timeLeft > 0 ? (
             <>
               <span className="text-gray-400">{t("expires_in")}</span>
-              <div>{timeLeftFormat(timeLeft)}</div>
+              <div>{timeLeftFormat(timeLeft, t)}</div>
             </>
           ) : (
             <span className="text-gray-400 font-semibold">{t("Expired")}</span>

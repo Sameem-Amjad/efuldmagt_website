@@ -6,6 +6,7 @@ import axios from "axios";
 import { LoadingSpinner } from "../../global/Loaders/Loader";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 const SignaturePopup = ({ isOpen, onClose, onSave }) => {
     const { user } = useSelector((state) => state.user);
     const sigCanvas = useRef({});
@@ -15,6 +16,8 @@ const SignaturePopup = ({ isOpen, onClose, onSave }) => {
     const [loading, setLoading] = useState(false);
     const { t } = useTranslation();
     const clear = () => sigCanvas.current.clear();
+    // 450px canvas, narrower on small screens so the popup (and its Cancel/Done buttons) fits on a phone
+    const canvasWidth = Math.min(450, window.innerWidth - 80);
 
     const save = async () => {
         try {
@@ -63,7 +66,7 @@ const SignaturePopup = ({ isOpen, onClose, onSave }) => {
         <>
             {!showSignatureOptions && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-                    <div className="bg-white rounded-lg p-6 space-y-4 w-auto sm:w-[500px]">
+                    <div className="bg-white rounded-lg p-6 space-y-4 w-auto max-w-[calc(100vw-1rem)] sm:w-[500px]">
                         <div className="flex justify-between items-center mb-4">
                             <div className="flex justify-start space-x-4">
                                 <button onClick={onClose} className="text-gray-500 hover:text-gray-700 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed" disabled={loading}>
@@ -79,7 +82,7 @@ const SignaturePopup = ({ isOpen, onClose, onSave }) => {
                         </div>
                         <SignatureCanvas
                             penColor="black"
-                            canvasProps={{ width: 450, height: 200, className: "border border-gray-300 rounded-lg" }}
+                            canvasProps={{ width: canvasWidth, height: 200, className: "border border-gray-300 rounded-lg" }}
                             ref={sigCanvas}
                         />
                         <div className="text-center mt-4">
@@ -97,7 +100,7 @@ const SignaturePopup = ({ isOpen, onClose, onSave }) => {
 
             {showSignatureOptions && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-                    <div className="bg-white rounded-lg p-6 space-y-4 w-auto sm:w-[600px]">
+                    <div className="bg-white rounded-lg p-6 space-y-4 w-auto max-w-[calc(100vw-1rem)] sm:w-[600px]">
                         <div className="flex justify-between items-center mb-4">
                             <button onClick={() => setShowSignatureOptions(false)} className="text-gray-500 hover:text-gray-700 text-sm font-semibold">
                                 {t("Back")}

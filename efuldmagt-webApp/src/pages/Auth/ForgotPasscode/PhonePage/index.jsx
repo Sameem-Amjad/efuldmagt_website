@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { PhoneNumberUtil } from "google-libphonenumber";
 import parsePhoneNumber from "libphonenumber-js";
 import PhoneComponent from "@/components/global/phone/phoneComponet";
-import { sendOTP } from "../../../../services/authentication.services";
+import { forgetPasscodeSendOTP } from "../../../../services/authentication.services";
 import { toast } from "react-toastify";
 import { LoadingSpinner } from "../../../../components/global/Loaders/Loader";
 import { useTranslation } from "react-i18next";
@@ -34,7 +34,9 @@ const PhonePage = () => {
     try {
       setLoading(true);
       const parsedNumber = parsePhoneNumber(phone);
-      const res = await sendOTP({
+      // The forgot-password route checks that the account exists and is not locked or a demo account
+      // (the sign-up route used before did neither).
+      const res = await forgetPasscodeSendOTP({
         phone: {
           countryCode: parsedNumber?.countryCallingCode,
           number: parsedNumber?.nationalNumber,
@@ -52,7 +54,7 @@ const PhonePage = () => {
         state: {
           phone: {
             countryCode: parsedNumber?.countryCallingCode,
-            number: parsePhoneNumber?.nationalNumber,
+            number: parsedNumber?.nationalNumber,
           },
           encryptedOTPToken: res?.data?.data?.encryptedOTPToken,
         },

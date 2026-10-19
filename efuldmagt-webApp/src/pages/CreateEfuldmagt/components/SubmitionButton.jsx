@@ -1,13 +1,17 @@
 /* eslint-disable react/prop-types */
 
+import { useNavigate } from "react-router-dom";
 import { LoadingSpinner } from "../../../components/global/Loaders/Loader";
 
 const SubmitionButton = ({ isRequest, credentials = {}, loading }) => {
+  const navigate = useNavigate();
   return (
     <div className="flex flex-col md:flex-row justify-center items-center mt-4 gap-3 pb-5 w-full">
       {/* Cancel Button */}
       <button
         type="button"
+        onClick={() => navigate("/")}
+        disabled={loading}
         className="order-last md:order-first w-[250px] h-[50px] outline outline-1 outline-gray-300 rounded-lg font-bold"
       >
         Cancel

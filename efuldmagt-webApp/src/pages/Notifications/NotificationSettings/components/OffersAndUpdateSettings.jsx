@@ -49,7 +49,7 @@ const OffersAndUpdateSettings = ({ notifications, setNotifications }) => {
     <div className="md:w-4/5 lg:w-3/5 space-y-4 py-2 px-2">
       <div className="text-lg font-bold">Offers and Updates</div>
       <p className="text-md">
-      {t("We will send you offers from lawyers in our partner network, as well as exclusive special offers tailored just for you.")}        exclusive special offers tailored just for you.
+      {t("We will send you offers from lawyers in our partner network, as well as exclusive special offers tailored just for you.")}
       </p>
 
       <SetNotificationsItem

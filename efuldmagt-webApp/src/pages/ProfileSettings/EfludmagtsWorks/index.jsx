@@ -73,7 +73,7 @@ export default function EfludmagtsWorksPage() {
         </Carousel>
         <div className="flex justify-center w-full my-6">
           <Link
-            to="/home"
+            to="/"
             className="btn-primary w-[300px] h-[50px] text-center"
           >
             Create Fuldmagt

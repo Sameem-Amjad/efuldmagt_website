@@ -12,13 +12,15 @@ export default function NotificationItem({ item }) {
         if (
           item?.data?.actionType == "create_fuldmagt" ||
           item?.data?.actionType == "revoke_fuldmagt" ||
-          item?.data?.actionType == "reissue_fuldmagt"
+          item?.data?.actionType == "reissue_fuldmagt" ||
+          item?.data?.actionType == "acknowledge_fuldmagt"
         ) {
           navigate(`/e-fuldmagts/${item?.data?.fuldmagtId}`);
         } else if (
           item?.data?.actionType == "request_fuldmagt" ||
           item?.data?.actionType == "reject_fuldmagt_request" ||
-          item?.data?.actionType == "approve_fuldmagt_request"
+          item?.data?.actionType == "approve_fuldmagt_request" ||
+          item?.data?.actionType == "reissue_fuldmagt_request"
         ) {
           navigate(`/e-fuldmagt-requests/${item?.data?.fuldmagtRequestId}`);
         }

@@ -214,10 +214,9 @@ const ApprovalPopup = ({ fuldmagt, handleApprove, approving }) => {
         //     toast.success(t("mitid_signature_verified_toast"));
         //     setVerifiedDocumentLink(result.serverSavePath);
         //     setVerifiedDocumentKey(result.fuldmagtDocumentKey);
-        handleApprove({
-            link: "https://example.com/verified-document.pdf",
-            key: "aabbccddeeff00112233445566778899",
-        });
+        // MitID signing is switched off, so there is no signed document to attach
+        // (placeholder example.com links showed up as a "MitID Verified" document).
+        handleApprove({ link: null, key: null });
 
         // sessionStorage.removeItem(orderIdKey);
         // sessionStorage.removeItem(signatoryIdKey);
@@ -268,7 +267,7 @@ const ApprovalPopup = ({ fuldmagt, handleApprove, approving }) => {
                     </button>
 
                     <p className="text-lg text-gray-900 text-center">
-                        {t("mitid_approval_prompt", { giverName: fuldmagt?.fuldmagtGiverName })}
+                        {t("mitid_approval_prompt", { giverName: fuldmagt?.agentName })}
                         {/* <span className="font-semibold">{fuldmagt?.fuldmagtGiverName}</span>. */}
                     </p>
 
